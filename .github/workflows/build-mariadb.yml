@@ -18,6 +18,9 @@ jobs:
 
       - name: Setup MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
+        
+      - name: Install Bison and Flex
+        run: choco install winflexbison3        
 
       - name: Configure CMake
         run: |
