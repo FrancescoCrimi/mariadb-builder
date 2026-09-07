@@ -19,9 +19,6 @@ jobs:
       - name: Setup MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup Ninja
-        uses: ninja-build/setup-ninja@v5
-
       - name: Configure CMake
         run: |
           cmake -B build -G "Ninja" `
