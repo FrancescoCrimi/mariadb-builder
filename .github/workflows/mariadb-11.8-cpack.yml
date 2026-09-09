@@ -25,6 +25,7 @@ jobs:
         run: |
           cmake -B build -G "Ninja" `
             -DCMAKE_BUILD_TYPE=Release `
+            -DBUILD_CONFIG=mysql_release `
             -DWITH_EMBEDDED_SERVER=ON `
             -DWITH_UNIT_TESTS=OFF `
             -DNOT_WITH_MTR=ON `
@@ -46,21 +47,17 @@ jobs:
             -DPLUGIN_ROCKSDB=NO `
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
-            -DPLUGIN_SPIDER=NO `
-            -DCMAKE_INSTALL_PREFIX=build/redist
+            -DPLUGIN_SPIDER=NO
 
       - name: Build Embedded Server
         run: cmake --build build --target all
 
-      - name: Install Files to Redist Folder
-        run: cmake --install build --config Release
+      - name: Run CPack Packaging
+        working-directory: ./build
+        run: cpack -G ZIP # Genera un file .zip nativo pulito per Windows (usa TGZ su Linux)
 
-      - name: Compress Redistributable Package
-        run: |
-          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-win-x64.zip
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Artifact
+        uses: actions/artifacts@v4
         with:
-          name: mariadb-11.8.9-win-x64
-          path: mariadb-11.8.9-win-x64.zip
+          name: mariadb-11.8.9-custom-winx64
+          path: build/*.zip
