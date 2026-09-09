@@ -1,4 +1,4 @@
-name: Build MariaDB Embedded Minimal
+name: Build MariaDB 10.11
 
 on:
   workflow_dispatch: # Abilita l'avvio manuale
