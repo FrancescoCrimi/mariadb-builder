@@ -13,7 +13,8 @@ jobs:
         with:
           repository: MariaDB/server
           # ref: 11.8 # Versione LTS consigliata
-          ref: bf9193a939f515e95dd8def1a5468088c91cede6
+          # ref: bf9193a939f515e95dd8def1a5468088c91cede6
+          ref: mariadb-11.8.9 # Versione LTS consigliata
           submodules: recursive
 
       - name: Setup MSVC Compiler
@@ -53,10 +54,10 @@ jobs:
 
       - name: Compress Redistributable Package
         run: |
-          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8-win-x64.zip
+          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-win-x64.zip
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8-win-x64
-          path: mariadb-11.8-win-x64.zip
+          name: mariadb-11.8.9-win-x64
+          path: mariadb-11.8.9-win-x64.zip
