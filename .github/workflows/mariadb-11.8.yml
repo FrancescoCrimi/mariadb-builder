@@ -52,7 +52,7 @@ jobs:
 
       - name: Generate Official Windows ZIP Package
         working-directory: ./build
-        run: --build . --target win_package
+        run: cmake --build . --target win_package
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
