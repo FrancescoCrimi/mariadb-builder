@@ -32,7 +32,6 @@ jobs:
             -DCPACK_NOSYMBOLS=ON `
             -DWITH_GSSAPI=OFF `
             -DINSTALL_DOCDIR=NONE `
-            -DINSTALL_DOCREADMEDIR=NONE `
             -DINSTALL_SUPPORTFILESDIR=NONE `
             -DWITH_MARIABACKUP=OFF `
             -DWITH_WSREP=OFF `
@@ -47,20 +46,16 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DCMAKE_INSTALL_PREFIX=build/redist
 
       - name: Build Embedded Server
-        run: cmake --build build --target all
+        run: cmake --build build
 
-      - name: Install Files to Redist Folder
-        run: cmake --install build --config Release
-
-      - name: Compress Redistributable Package
-        run: |
-          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-win-x64.zip
-
-      - name: Upload Build Artifact
+      - name: Generate Official Windows ZIP Package
+        working-directory: ./build
+        run: --build . --target win_package
+          
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-win-x64
-          path: mariadb-11.8.9-win-x64.zip
+          name: mariadb-11.8.9-custom-winx64
+          path: build/mariadb-*.zip
