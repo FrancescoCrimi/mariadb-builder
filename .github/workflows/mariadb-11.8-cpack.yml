@@ -1,4 +1,4 @@
-name: Build MariaDB 11.8
+name: Build MariaDB 11.8-CPack
 
 on:
   workflow_dispatch: # Abilita l'avvio manuale
