@@ -1,0 +1,62 @@
+name: Build MariaDB 11.8
+
+on:
+  workflow_dispatch: # Abilita l'avvio manuale
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout MariaDB Source
+        uses: actions/checkout@v4
+        with:
+          repository: MariaDB/server
+          # ref: 11.8 # Versione LTS consigliata
+          ref: bf9193a939f515e95dd8def1a5468088c91cede6
+          submodules: recursive
+
+      - name: Setup MSVC Compiler
+        uses: ilammy/msvc-dev-cmd@v1
+        
+      - name: Install Bison and Flex
+        run: choco install winflexbison3        
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Ninja" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DWITH_EMBEDDED_SERVER=ON `
+            -DWITH_UNIT_TESTS=OFF `
+            -DNOT_WITH_MTR=ON `
+            -DINSTALL_NOSYMBOLS=ON `
+            -DWITH_MARIABACKUP=OFF `
+            -DWITH_WSREP=OFF `
+            -DPLUGIN_MYISAM=NO `
+            -DPLUGIN_ARIA=YES `
+            -DPLUGIN_INNOBASE=YES `
+            -DPLUGIN_ARCHIVE=NO `
+            -DPLUGIN_BLACKHOLE=NO `
+            -DPLUGIN_CSV=NO `
+            -DPLUGIN_FEDERATEDX=NO `
+            -DPLUGIN_ROCKSDB=NO `
+            -DPLUGIN_CONNECT=NO `
+            -DPLUGIN_SEQUENCE=NO `
+            -DPLUGIN_SPIDER=NO `
+            -DCMAKE_INSTALL_PREFIX=build/redist
+
+      - name: Build Embedded Server
+        run: cmake --build build --config Release
+
+      - name: Install Files to Redist Folder
+        run: cmake --install build --config Release
+
+      - name: Compress Redistributable Package
+        run: |
+          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8-win-x64.zip
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mariadb-11.8-win-x64
+          path: mariadb-11.8-win-x64.zip
