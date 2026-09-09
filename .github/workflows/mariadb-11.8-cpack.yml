@@ -57,7 +57,7 @@ jobs:
         run: cpack -G ZIP # Genera un file .zip nativo pulito per Windows (usa TGZ su Linux)
 
       - name: Upload Artifact
-        uses: actions/artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: mariadb-11.8.9-custom-winx64
           path: build/*.zip
