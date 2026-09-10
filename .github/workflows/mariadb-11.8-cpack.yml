@@ -20,7 +20,9 @@ jobs:
 
       - name: Setup MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
-        
+        with:
+          arch: x64 # <--- QUESTO FORZA DUMPBIN A ESSERE A 64 BIT NATIVO
+
       - name: Genera il file CMake personalizzato al volo
         shell: pwsh
         run: |
