@@ -27,6 +27,9 @@ jobs:
           # Creiamo il file direttamente dentro la cartella dei sorgenti di MariaDB appena scaricata
           @'
             function(aggiungi_target_pacchetto)
+              if(TARGET cicciosoft_win_package_zip)
+                return()
+              endif()
               set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
               ADD_CUSTOM_TARGET(
                 cicciosoft_win_package_zip
