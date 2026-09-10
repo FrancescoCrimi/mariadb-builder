@@ -20,12 +20,30 @@ jobs:
 
       - name: Setup MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
+        
+      - name: Genera il file CMake personalizzato al volo
+        shell: pwsh
+        run: |
+          # Creiamo il file direttamente dentro la cartella dei sorgenti di MariaDB appena scaricata
+          @'
+            function(aggiungi_target_pacchetto)
+              set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
+              ADD_CUSTOM_TARGET(
+                cicciosoft_win_package_zip
+                COMMAND ${CMAKE_CPACK_COMMAND} ${CPACK_CONFIG_PARAM} -D "COMPONENTS_IGNORE=${COMPONENTS_IGNORE}"
+                WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+              )
+              SET_TARGET_PROPERTIES(
+                cicciosoft_win_package_zip
+                PROPERTIES
+                EXCLUDE_FROM_ALL TRUE
+                EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+            endfunction()
+            cmake_language(DEFER CALL aggiungi_target_pacchetto)
+          '@ | Out-File -FilePath "my_custom_targets.cmake" -Encoding utf8        
 
       - name: Configure CMake
         run: |
-          # Convertiamo il percorso in uno standard con le barre dritte (/) gradito a CMake
-          $custom_cmake = "${{ github.workspace }}/my_custom_targets.cmake".Replace('\', '/')
-          
           cmake -B build -G "Ninja" `
             -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_CONFIG=mysql_release `
@@ -51,7 +69,7 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DCMAKE_PROJECT_INCLUDE="$custom_cmake"
+            -DCMAKE_PROJECT_INCLUDE="my_custom_targets.cmake"
 
       - name: Build Embedded Server
         run: cmake --build build --target cicciosoft_win_package_zip
