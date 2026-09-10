@@ -47,17 +47,18 @@ jobs:
             -DPLUGIN_ROCKSDB=NO `
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
-            -DPLUGIN_SPIDER=NO
+            -DPLUGIN_SPIDER=NO `
+            -DCMAKE_PROJECT_INCLUDE="${{ github.workspace }}/my_custom_targets.cmake"
 
       - name: Build Embedded Server
-        run: cmake --build build --target all
+        run: cmake --build build --target cicciosoft_win_package_zip
 
-      - name: Run CPack Packaging
-        working-directory: ./build
-        run: cpack -G ZIP # Genera un file .zip nativo pulito per Windows (usa TGZ su Linux)
+      #- name: Run CPack Packaging
+      #  working-directory: ./build
+      #  run: cpack -G ZIP # Genera un file .zip nativo pulito per Windows (usa TGZ su Linux)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-custom-winx64
+          name: mariadb-11.8.9-cicciosoft-winx64
           path: build/*.zip
