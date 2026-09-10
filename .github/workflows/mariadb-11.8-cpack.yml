@@ -40,7 +40,7 @@ jobs:
                 EXCLUDE_FROM_DEFAULT_BUILD TRUE)
             endfunction()
             cmake_language(DEFER CALL aggiungi_target_pacchetto)
-          '@ | Out-File -FilePath "${{ github.workspace }}/my_custom_targets.cmake" -Encoding utf8
+          '@ | Out-File -FilePath "my_custom_targets.cmake" -Encoding utf8
           Write-Host "IL CAZZO DI FILE E STATO CREATO QUI: $((Get-Item "my_custom_targets.cmake").FullName)"          
 
       - name: Configure CMake
