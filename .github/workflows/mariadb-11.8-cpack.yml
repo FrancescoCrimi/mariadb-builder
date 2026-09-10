@@ -80,7 +80,11 @@ jobs:
             -DCMAKE_PROJECT_INCLUDE="D:\a\mariadb-builder\mariadb-builder\my_custom_targets.cmake"
 
       - name: Build Embedded Server
-        run: cmake --build build --target cicciosoft_win_package_zip
+        run: cmake --build build
+
+      - name: Generate Official Windows ZIP Package
+        working-directory: ./build
+        run: cmake --build . --target cicciosoft_win_package_zip
 
       #- name: Run CPack Packaging
       #  working-directory: ./build
