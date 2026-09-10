@@ -1,4 +1,4 @@
-name: Build MariaDB 11.8-CPack
+name: Build MariaDB 11.8-custom-target
 
 on:
   workflow_dispatch: # Abilita l'avvio manuale
@@ -22,6 +22,31 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
+
+      - name: Genera il file CMake personalizzato al volo
+        shell: pwsh
+        run: |
+          # Creiamo il file direttamente dentro la cartella dei sorgenti di MariaDB appena scaricata
+          @'
+            function(aggiungi_target_pacchetto)
+              if(TARGET cicciosoft_win_package_zip)
+                return()
+              endif()
+              set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
+              ADD_CUSTOM_TARGET(
+                cicciosoft_win_package_zip
+                COMMAND ${CMAKE_CPACK_COMMAND} ${CPACK_CONFIG_PARAM} -D "COMPONENTS_IGNORE=${COMPONENTS_IGNORE}"
+                WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+              )
+              SET_TARGET_PROPERTIES(
+                cicciosoft_win_package_zip
+                PROPERTIES
+                EXCLUDE_FROM_ALL TRUE
+                EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+            endfunction()
+            cmake_language(DEFER CALL aggiungi_target_pacchetto)
+          '@ | Out-File -FilePath "my_custom_targets.cmake" -Encoding utf8
+          Write-Host "IL CAZZO DI FILE E STATO CREATO QUI: $((Get-Item "my_custom_targets.cmake").FullName)"          
 
       - name: Configure CMake
         run: |
@@ -47,17 +72,18 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DPLUGIN_EXAMPLE=NO
+            -DPLUGIN_EXAMPLE=NO `
+            -DCMAKE_PROJECT_INCLUDE="D:\a\mariadb-builder\mariadb-builder\my_custom_targets.cmake"
 
       - name: Build Embedded Server
         run: cmake --build build
 
-      - name: Run CPack Packaging
+      - name: Generate Official Windows ZIP Package
         working-directory: ./build
-        run: cpack -G ZIP
+        run: cmake --build . --target cicciosoft_win_package_zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-CPack
+          name: mariadb-11.8.9-custom-target
           path: build/*.zip
