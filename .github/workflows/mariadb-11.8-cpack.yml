@@ -68,6 +68,7 @@ jobs:
             -DPLUGIN_ARCHIVE=NO `
             -DPLUGIN_BLACKHOLE=NO `
             -DPLUGIN_CSV=NO `
+            -DPLUGIN_FEDERATED=NO ` 
             -DPLUGIN_FEDERATEDX=NO `
             -DPLUGIN_ROCKSDB=NO `
             -DPLUGIN_CONNECT=NO `
