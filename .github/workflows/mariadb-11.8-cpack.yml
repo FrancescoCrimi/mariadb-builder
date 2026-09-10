@@ -70,7 +70,7 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DCMAKE_PROJECT_INCLUDE="my_custom_targets.cmake"
+            -DCMAKE_PROJECT_INCLUDE="D:\a\mariadb-builder\mariadb-builder\my_custom_targets.cmake"
 
       - name: Build Embedded Server
         run: cmake --build build --target cicciosoft_win_package_zip
