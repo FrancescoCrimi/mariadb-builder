@@ -73,6 +73,7 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
+            -DPLUGIN_EXAMPLE=NO `
             -DCMAKE_PROJECT_INCLUDE="D:\a\mariadb-builder\mariadb-builder\my_custom_targets.cmake"
 
       - name: Build Embedded Server
