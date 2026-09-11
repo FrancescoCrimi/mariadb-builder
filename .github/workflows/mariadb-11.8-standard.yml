@@ -1,4 +1,4 @@
-name: Build MariaDB 11.8-Minimal
+name: Build MariaDB 11.8-Standard
 
 on:
   workflow_dispatch:
@@ -28,27 +28,7 @@ jobs:
         run: |
           cmake -B build -G "Ninja" `
             -DCMAKE_BUILD_TYPE=Release `
-            -DWITH_EMBEDDED_SERVER=ON `
-            -DWITH_UNIT_TESTS=OFF `
-            -DWITH_MARIABACKUP=OFF `
-            -DWITH_WSREP=OFF `
-            -DINSTALL_DOCDIR=NONE `
-            -DINSTALL_SUPPORTFILESDIR=NONE `
-            -DCPACK_NOSYMBOLS=ON `
-            -DPLUGIN_AUTH_GSSAPI=NO `
-            -DPLUGIN_MYISAM=NO `
-            -DPLUGIN_ARIA=YES `
-            -DPLUGIN_INNOBASE=YES `
-            -DPLUGIN_ARCHIVE=NO `
-            -DPLUGIN_BLACKHOLE=NO `
-            -DPLUGIN_CSV=NO `
-            -DPLUGIN_FEDERATED=NO `
-            -DPLUGIN_FEDERATEDX=NO `
-            -DPLUGIN_ROCKSDB=NO `
-            -DPLUGIN_CONNECT=NO `
-            -DPLUGIN_SEQUENCE=NO `
-            -DPLUGIN_SPIDER=NO `
-            -DPLUGIN_EXAMPLE=NO `
+            -DBUILD_CONFIG=mysql_release `
             -DCMAKE_INSTALL_PREFIX=build/redist
 
       - name: Build MariaDB
@@ -59,10 +39,10 @@ jobs:
 
       - name: Compress Redistributable Package
         run: |
-          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-minimal.zip
+          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-standard.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-minimal
-          path: mariadb-11.8.9-minimal.zip
+          name: mariadb-11.8.9-standard
+          path: mariadb-11.8.9-standard.zip

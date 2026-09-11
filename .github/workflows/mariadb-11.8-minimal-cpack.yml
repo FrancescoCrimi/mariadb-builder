@@ -1,7 +1,7 @@
-name: Build MariaDB 11.8-CPack
+name: Build MariaDB 11.8-Minimal-CPack
 
 on:
-  workflow_dispatch: # Abilita l'avvio manuale
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
 
       - name: Install Bison and Flex
-        run: choco install winflexbison3        
+        run: choco install winflexbison3
 
       - name: Setup MSVC Compiler
         uses: ilammy/msvc-dev-cmd@v1
@@ -50,7 +50,7 @@ jobs:
             -DPLUGIN_SPIDER=NO `
             -DPLUGIN_EXAMPLE=NO
 
-      - name: Build Embedded Server
+      - name: Build MariaDB
         run: cmake --build build
 
       - name: Run CPack Packaging
@@ -60,5 +60,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-cpack
+          name: mariadb-11.8.9-minimal-cpack
           path: build/*.zip

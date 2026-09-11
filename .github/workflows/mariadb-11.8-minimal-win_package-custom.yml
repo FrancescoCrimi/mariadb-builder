@@ -1,7 +1,7 @@
-name: Build MariaDB 11.8-custom-zip-target
+name: Build MariaDB 11.8-Minimal-Win-Package-Custom
 
 on:
-  workflow_dispatch: # Abilita l'avvio manuale
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -12,7 +12,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MariaDB/server
-          ref: mariadb-11.8.9
+          # ref: mariadb-11.8.9
+          ref: bf9193a939f515e95dd8def1a5468088c91cede6
           submodules: recursive
 
       - name: Install Bison and Flex
@@ -94,7 +95,7 @@ jobs:
             -DPLUGIN_EXAMPLE=NO `
             -DCMAKE_PROJECT_INCLUDE="${{ github.workspace }}\my_custom_targets.cmake"
 
-      - name: Build Embedded Server
+      - name: Build MariaDB
         run: cmake --build build
 
       - name: Generate Official Windows ZIP Package
@@ -104,5 +105,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-custom-zip-target
+          name: mariadb-11.8.9-minimal-win_package-custom
           path: build/*.zip
