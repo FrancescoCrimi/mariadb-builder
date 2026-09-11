@@ -104,5 +104,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mariadb-11.8.9-custom-target
+          name: mariadb-11.8.9-custom-zip-target
           path: build/*.zip
