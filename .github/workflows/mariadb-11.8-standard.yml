@@ -29,6 +29,7 @@ jobs:
           cmake -B build -G "Ninja" `
             -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_CONFIG=mysql_release `
+            -DWITH_EMBEDDED_SERVER=ON `
             -DCMAKE_INSTALL_PREFIX=build/redist
 
       - name: Build MariaDB
