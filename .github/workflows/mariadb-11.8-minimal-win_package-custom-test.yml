@@ -24,30 +24,29 @@ jobs:
         with:
           arch: x64
 
-      - name: Genera il file CMake personalizzato al volo
-        shell: pwsh
+      - name: Apply inline patch
+        shell: bash
         run: |
-          # Creiamo il file direttamente dentro la cartella dei sorgenti di MariaDB appena scaricata
-          @'
-            function(aggiungi_target_pacchetto)
-              if(TARGET cicciosoft_win_package_zip)
-                return()
-              endif()
-              set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
-              ADD_CUSTOM_TARGET(
-                cicciosoft_win_package_zip
-                COMMAND ${CMAKE_CPACK_COMMAND} ${CPACK_CONFIG_PARAM} -D "COMPONENTS_IGNORE=${COMPONENTS_IGNORE}"
-                WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-              )
-              SET_TARGET_PROPERTIES(
-                cicciosoft_win_package_zip
-                PROPERTIES
-                EXCLUDE_FROM_ALL TRUE
-                EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-            endfunction()
-            cmake_language(DEFER CALL aggiungi_target_pacchetto)
-          '@ | Out-File -FilePath "my_custom_targets.cmake" -Encoding utf8
-          Write-Host "IL CAZZO DI FILE E STATO CREATO QUI: $((Get-Item "my_custom_targets.cmake").FullName)"          
+          patch -p1 << 'EOF'
+          --- a/win/packaging/CMakeLists.txt	2026-08-19 11:29:29.000000000 +0200
+          +++ b/win/packaging/CMakeLists.txt	2026-09-11 17:22:43.824644100 +0200
+          @@ -218,7 +218,7 @@ ENDIF()
+           
+           ADD_CUSTOM_TARGET(
+             win_package_zip
+          -  ${SIGN_COMMAND}
+          +#  ${SIGN_COMMAND}
+             COMMAND ${CMAKE_CPACK_COMMAND} ${CPACK_CONFIG_PARAM} --config ${CMAKE_CURRENT_SOURCE_DIR}/CPackZipConfig.cmake
+             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+           )
+          --- a/win/packaging/ComponentsIgnore.cmake	2026-08-19 11:29:29.000000000 +0200
+          +++ b/win/packaging/ComponentsIgnore.cmake	2026-09-11 17:23:39.702074100 +0200
+          @@ -1,2 +1,3 @@
+           # Components ignored in both ZIP and WIX generators
+          -set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test Embedded  plugin-hashicorp-key-management)
+          +#set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test Embedded  plugin-hashicorp-key-management)
+          +set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
+          EOF
 
       - name: Configure CMake
         run: |
@@ -73,15 +72,14 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DPLUGIN_EXAMPLE=NO `
-            -DCMAKE_PROJECT_INCLUDE="D:\a\mariadb-builder\mariadb-builder\my_custom_targets.cmake"
+            -DPLUGIN_EXAMPLE=NO
 
       - name: Build MariaDB
         run: cmake --build build
 
       - name: Generate Official Windows ZIP Package
         working-directory: ./build
-        run: cmake --build . --target cicciosoft_win_package_zip
+        run: cmake --build . --target win_package_zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
