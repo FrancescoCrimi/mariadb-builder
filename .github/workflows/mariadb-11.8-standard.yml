@@ -51,7 +51,7 @@ jobs:
       - name: Configure CMake
         run: |
           cmake -B build -G "Ninja" `
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_CONFIG=mysql_release `
             -DWITH_EMBEDDED_SERVER=ON
 
