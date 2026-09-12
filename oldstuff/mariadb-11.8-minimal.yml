@@ -24,30 +24,6 @@ jobs:
         with:
           arch: x64
 
-      - name: Apply inline patch
-        shell: bash
-        run: |
-          patch -p1 << 'EOF'
-          --- a/win/packaging/CMakeLists.txt	2026-08-19 11:29:29.000000000 +0200
-          +++ b/win/packaging/CMakeLists.txt	2026-09-11 17:22:43.824644100 +0200
-          @@ -218,7 +218,7 @@ ENDIF()
-           
-           ADD_CUSTOM_TARGET(
-             win_package_zip
-          -  ${SIGN_COMMAND}
-          +#  ${SIGN_COMMAND}
-             COMMAND ${CMAKE_CPACK_COMMAND} ${CPACK_CONFIG_PARAM} --config ${CMAKE_CURRENT_SOURCE_DIR}/CPackZipConfig.cmake
-             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-           )
-          --- a/win/packaging/ComponentsIgnore.cmake	2026-08-19 11:29:29.000000000 +0200
-          +++ b/win/packaging/ComponentsIgnore.cmake	2026-09-11 17:23:39.702074100 +0200
-          @@ -1,2 +1,3 @@
-           # Components ignored in both ZIP and WIX generators
-          -set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test Embedded  plugin-hashicorp-key-management)
-          +#set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test Embedded  plugin-hashicorp-key-management)
-          +set(COMPONENTS_IGNORE Debuginfo Server_Scripts SqlBench Test plugin-hashicorp-key-management)
-          EOF
-
       - name: Configure CMake
         run: |
           cmake -B build -G "Ninja" `
@@ -72,17 +48,21 @@ jobs:
             -DPLUGIN_CONNECT=NO `
             -DPLUGIN_SEQUENCE=NO `
             -DPLUGIN_SPIDER=NO `
-            -DPLUGIN_EXAMPLE=NO
+            -DPLUGIN_EXAMPLE=NO `
+            -DCMAKE_INSTALL_PREFIX=build/redist
 
       - name: Build MariaDB
         run: cmake --build build
 
-      - name: Generate Official Windows ZIP Package
-        working-directory: ./build
-        run: cmake --build . --target win_package
+      - name: Install Files to Redist Folder
+        run: cmake --install build
+
+      - name: Compress Redistributable Package
+        run: |
+          Compress-Archive -Path build/redist/* -DestinationPath mariadb-11.8.9-minimal.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: mariadb-11.8.9-minimal
-          path: build/*.zip
+          path: mariadb-11.8.9-minimal.zip
