@@ -66,8 +66,7 @@ jobs:
             -DPLUGIN_SPIDER=NO `
             -DPLUGIN_SPHINX=NO `
             -DPLUGIN_FEEDBACK=NO `
-            -DPLUGIN_EXAMPLE=NO `
-            -DCPACK_PACKAGE_FILE_NAME="${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-minimal-${CPACK_SYSTEM_NAME}"
+            -DPLUGIN_EXAMPLE=NO
 
       - name: Build MariaDB
         run: cmake --build build
