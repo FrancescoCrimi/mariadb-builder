@@ -51,14 +51,14 @@ jobs:
       - name: Configure CMake
         run: |
           cmake -B build -G "Ninja" `
-            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
             -DBUILD_CONFIG=mysql_release `
             -DWITH_EMBEDDED_SERVER=ON
 
       - name: Build MariaDB
         run: cmake --build build
 
-      - name: Generate Official Windows ZIP Package
+      - name: Generate Windows ZIP Package
         working-directory: ./build
         run: cmake --build . --target win_package
 
